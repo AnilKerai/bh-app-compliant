@@ -1,0 +1,66 @@
+﻿@page "/projects"
+@using BuildHub.App.Compliant.Application.Models
+@using BuildHub.App.Compliant.Application.Services
+
+@inject IProjectService ProjectService
+@inject NavigationManager Navigation
+
+<PageTitle>Projects</PageTitle>
+
+<MudText Typo="Typo.h2">Your Projects</MudText>
+
+@if (_projects is null)
+{
+    <Loading />
+}
+else
+{
+    
+    <MudDataGrid T="ProjectViewModel" MultiSelection="true" Items="@_projects" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@QuickFilter"
+                 Hideable="true" RowClick="@RowClicked">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Projects</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <Columns>
+            <SelectColumn T="ProjectViewModel" />
+            <PropertyColumn Property="x => x.Id" Title="Id" Sortable="false" Filterable="false" />
+            <PropertyColumn Property="x => x.Reference" SortBy="@SortBy" />
+            <PropertyColumn Property="x => x.Overview" />
+            <PropertyColumn Property="x => x.ProjectStartDate" />
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="ProjectViewModel" />
+        </PagerContent>
+    </MudDataGrid>
+}
+
+@code {
+    private IEnumerable<ProjectViewModel> _projects = null!;
+    private string? _searchString;
+    
+    private Func<ProjectViewModel, object> SortBy => x => x.Reference;
+    
+    private Func<ProjectViewModel, bool> QuickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.Reference.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _projects = await ProjectService.GetProjects(Guid.NewGuid());
+    }
+
+    void RowClicked(DataGridRowClickEventArgs<ProjectViewModel> args)
+    {
+        Navigation.NavigateTo($"v2/project/{args.Item.Id}");
+    }
+}

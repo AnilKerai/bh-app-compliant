@@ -1,0 +1,38 @@
+﻿@page "/"
+@using BuildHub.App.Compliant.Shared.Services
+@inject IFormFactor FormFactor
+
+<PageTitle>Home</PageTitle>
+
+<MudText Typo="Typo.h2">Hello, world!</MudText>
+
+<MudText Typo="Typo.body1"></MudText>Welcome to your new app running on <em>@factor</em> using <em>@platform</em>.
+
+<MudContainer MaxWidth="MaxWidth.Large">
+    <MudGrid Spacing="3">
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6">Total Documents</MudText>
+                <MudText Typo="Typo.h5" Class="mt-2">120</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6">Pending Approvals</MudText>
+                <MudText Typo="Typo.h5" Class="mt-2">5</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12">
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6">Recent Activities</MudText>
+                <MudText Typo="Typo.body1" Class="mt-2">- John uploaded a new blueprint</MudText>
+                <MudText Typo="Typo.body1">- Jane approved a document</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private string factor => FormFactor.GetFormFactor();
+    private string platform => FormFactor.GetPlatform();
+}
