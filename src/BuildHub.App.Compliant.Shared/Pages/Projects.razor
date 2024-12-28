@@ -61,6 +61,7 @@ else
 
     void RowClicked(DataGridRowClickEventArgs<ProjectViewModel> args)
     {
-        Navigation.NavigateTo($"v2/project/{args.Item.Id}");
+        Navigation.NavigateTo($"/project/{args.Item.Id}");
+        // Navigation.NavigateTo($"v2/project/{args.Item.Id}");
     }
 }
