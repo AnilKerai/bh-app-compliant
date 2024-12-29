@@ -7,8 +7,6 @@
 
 <PageTitle>Projects</PageTitle>
 
-<MudText Typo="Typo.h2">Your Projects</MudText>
-
 @if (_projects is null)
 {
     <Loading />
@@ -17,7 +15,7 @@ else
 {
     
     <MudDataGrid T="ProjectViewModel" MultiSelection="true" Items="@_projects" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@QuickFilter"
-                 Hideable="true" RowClick="@RowClicked">
+                 Hideable="true" Hover="true" RowClick="@RowClicked">
         <ToolBarContent>
             <MudText Typo="Typo.h6">Projects</MudText>
             <MudSpacer />

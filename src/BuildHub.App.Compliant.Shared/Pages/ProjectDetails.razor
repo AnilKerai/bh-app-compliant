@@ -15,15 +15,6 @@ else
 {
     
     <MudContainer MaxWidth="MaxWidth.Large">
-        <!-- Title Section -->
-        <MudPaper Elevation="2" Class="pa-4">
-            <MudGrid Spacing="3" AlignItems="Center">
-                <MudItem xs="12">
-                    <MudText Typo="Typo.h4">Project Details</MudText>
-                </MudItem>
-            </MudGrid>
-        </MudPaper>
-
         <MudGrid Spacing="3" Class="mt-4">
             <!-- Project Information Section -->
             <MudItem xs="12">
@@ -40,11 +31,11 @@ else
                         </MudItem>
                         <MudItem xs="12" sm="6">
                             <MudText Typo="Typo.h6">Start Date:</MudText>
-                            <MudText Typo="Typo.body1">@_project.ProjectStartDate?.UtcDateTime.ToShortDateString()</MudText>
+                            <MudText Typo="Typo.body1">@_project.ProjectStartDate.ToShortDateString()</MudText>
                         </MudItem>
                         <MudItem xs="12" sm="6">
                             <MudText Typo="Typo.h6">End Date:</MudText>
-                            <MudText Typo="Typo.body1">@_project.ProjectStartDate?.UtcDateTime.ToShortDateString()</MudText>
+                            <MudText Typo="Typo.body1">@_project.ProjectStartDate.ToShortDateString()</MudText>
                         </MudItem>
                     </MudGrid>
                 </MudPaper>
@@ -63,7 +54,7 @@ else
                         <RowTemplate>
                             <MudTd>@context.Name</MudTd>
                             <MudTd>@context.Type</MudTd>
-                            <MudTd>@context.DateUploaded.UtcDateTime.ToShortDateString()</MudTd>
+                            <MudTd>@context.DateUploaded.ToShortDateString()</MudTd>
                         </RowTemplate>
                     </MudTable>
                 </MudPaper>

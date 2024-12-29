@@ -6,5 +6,5 @@ public class EvidenceViewModel
     public string Name { get; init; } = string.Empty;
     public string Type { get; init; } = string.Empty;
     public string Url { get; set; } = string.Empty;
-    public DateTimeOffset DateUploaded { get; init; } = DateTimeOffset.MinValue;
+    public DateTime DateUploaded { get; init; } = DateTime.MinValue;
 }

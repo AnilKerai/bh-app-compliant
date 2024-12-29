@@ -6,6 +6,6 @@ public class ProjectViewModel
     public Guid ClientId { get; set; }
     public string Overview { get; set; } = string.Empty;
     public string Reference { get; set; } = string.Empty;
-    public DateTimeOffset? ProjectStartDate { get; set; }
+    public DateTime ProjectStartDate { get; set; }
     public IEnumerable<EvidenceViewModel> Evidence { get; init; } = [];
 }

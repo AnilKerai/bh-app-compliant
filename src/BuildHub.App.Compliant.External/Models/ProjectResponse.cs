@@ -6,6 +6,6 @@ public record ProjectResponse
     public Guid ClientId { get; set; }
     public string Overview { get; set; } = string.Empty;
     public string Reference { get; set; } = string.Empty;
-    public DateTimeOffset? ProjectStartDate { get; set; }
+    public DateTimeOffset ProjectStartDate { get; set; }
     public IEnumerable<EvidenceResponse> Evidence { get; set; } = [];
 }

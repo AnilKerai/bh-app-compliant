@@ -25,11 +25,11 @@ public class ProjectService(
                     ClientId = project.ClientId,
                     Overview = project.Overview,
                     Reference = project.Reference,
-                    ProjectStartDate = project.ProjectStartDate,
+                    ProjectStartDate = project.ProjectStartDate.UtcDateTime,
                     Evidence = project.Evidence.Select(evidenceResponse => new EvidenceViewModel
                     {
                         Id = evidenceResponse.Id,
-                        DateUploaded = evidenceResponse.DateUploaded,
+                        DateUploaded = evidenceResponse.DateUploaded.UtcDateTime,
                         Name = evidenceResponse.Name,
                         Type = evidenceResponse.Type,
                         Url = evidenceResponse.Url
@@ -50,11 +50,11 @@ public class ProjectService(
             ClientId = project.ClientId,
             Overview = project.Overview,
             Reference = project.Reference,
-            ProjectStartDate = project.ProjectStartDate,
+            ProjectStartDate = project.ProjectStartDate.UtcDateTime,
             Evidence = project.Evidence.Select(evidenceResponse => new EvidenceViewModel
             {
                 Id = evidenceResponse.Id,
-                DateUploaded = evidenceResponse.DateUploaded,
+                DateUploaded = evidenceResponse.DateUploaded.UtcDateTime,
                 Name = evidenceResponse.Name,
                 Type = evidenceResponse.Type,
                 Url = evidenceResponse.Url
