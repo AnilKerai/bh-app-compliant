@@ -15,17 +15,20 @@ else
 {
     <MudContainer MaxWidth="MaxWidth.Large">
         <MudGrid Spacing="3" Class="mt-4">
-            <!-- Project Information Section -->
             <MudItem xs="12">
                 <MudPaper Elevation="1" Class="pa-4">
-                    <MudText Typo="Typo.h5">Project Information</MudText>
+                    <MudText Typo="Typo.h5">@_complianceProject.ProjectName</MudText>
                     <MudGrid Spacing="3" Class="mt-3">
                         <MudItem xs="12" sm="6">
-                            <MudText Typo="Typo.h6">Project Name:</MudText>
+                            <MudText Typo="Typo.h6">Reference:</MudText>
                             <MudText Typo="Typo.body1">@_complianceProject.Reference</MudText>
                         </MudItem>
                         <MudItem xs="12" sm="6">
-                            <MudText Typo="Typo.h6">Description:</MudText>
+                            <MudText Typo="Typo.h6">Location:</MudText>
+                            <MudText Typo="Typo.body1">@_complianceProject.ProjectLocation</MudText>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.h6">Overview:</MudText>
                             <MudText Typo="Typo.body1">@_complianceProject.Overview</MudText>
                         </MudItem>
                         <MudItem xs="12" sm="6">
@@ -40,20 +43,81 @@ else
                 </MudPaper>
             </MudItem>
 
-            <!-- Associated Documents Section -->
+            <!-- Compliance Status Section -->
             <MudItem xs="12">
                 <MudPaper Elevation="1" Class="pa-4">
-                    <MudText Typo="Typo.h5">Associated Documents</MudText>
-                    <MudTable Items="_complianceProject.Evidence" Dense="true" Hover="true" Class="mt-2">
+                    <MudText Typo="Typo.h5">Compliance Status</MudText>
+                    <MudGrid Spacing="3" Class="mt-3">
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6">Is Compliant:</MudText>
+                            <MudText Typo="Typo.body1">@(_complianceProject.ComplianceStatusViewModel.IsCompliant ? "Yes" : "No")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6">Non-Compliance Reasons:</MudText>
+                            <MudList T="string">
+                                @foreach (var reason in _complianceProject.ComplianceStatusViewModel.NonComplianceReasons)
+                                {
+                                    <MudListItem T="string">@reason</MudListItem>
+                                }
+                            </MudList>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.h6">Last Compliance Check:</MudText>
+                            <MudText Typo="Typo.body1">@_complianceProject.ComplianceStatusViewModel.LastComplianceCheckDate?.ToShortDateString()</MudText>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.h6">Checked By:</MudText>
+                            <MudText Typo="Typo.body1">@_complianceProject.ComplianceStatusViewModel.CheckedBy</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+
+            <!-- Evidence Section -->
+            <MudItem xs="12">
+                <MudPaper Elevation="1" Class="pa-4">
+                    <MudText Typo="Typo.h5">Evidence</MudText>
+                    <MudTable Items="_complianceProject.Evidence" Dense="true" Hover="true" Class="mt-3">
                         <HeaderContent>
                             <MudTh>Document Name</MudTh>
                             <MudTh>Type</MudTh>
-                            <MudTh>Date Uploaded</MudTh>
+                            <MudTh>Upload Date</MudTh>
+                            <MudTh>Uploaded By</MudTh>
+                            <MudTh>Verified</MudTh>
+                            <MudTh>Verified By</MudTh>
+                            <MudTh>Verified Date</MudTh>
+                            <MudTh>URL</MudTh>
                         </HeaderContent>
                         <RowTemplate>
                             <MudTd>@context.DocumentName</MudTd>
                             <MudTd>@context.DocumentType</MudTd>
                             <MudTd>@context.UploadDate.ToShortDateString()</MudTd>
+                            <MudTd>@context.UploadedBy</MudTd>
+                            <MudTd>@(context.IsVerified ? "Yes" : "No")</MudTd>
+                            <MudTd>@context.VerifiedBy</MudTd>
+                            <MudTd>@context.VerificationDate?.ToShortDateString()</MudTd>
+                            <MudTd>@context.Url</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
+
+            <!-- Audit Trail Section -->
+            <MudItem xs="12">
+                <MudPaper Elevation="1" Class="pa-4">
+                    <MudText Typo="Typo.h5">Audit Trail</MudText>
+                    <MudTable Items="_complianceProject.AuditTrails" Dense="true" Hover="true" Class="mt-3">
+                        <HeaderContent>
+                            <MudTh>Timestamp</MudTh>
+                            <MudTh>Action Performed</MudTh>
+                            <MudTh>Performed By</MudTh>
+                            <MudTh>Remarks</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@context.Timestamp.ToShortDateString()</MudTd>
+                            <MudTd>@context.ActionPerformed</MudTd>
+                            <MudTd>@context.PerformedBy.FullName</MudTd>
+                            <MudTd>@context.Remarks</MudTd>
                         </RowTemplate>
                     </MudTable>
                 </MudPaper>
