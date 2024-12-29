@@ -2,5 +2,5 @@
 
 public record ProjectsResponse
 {
-    public IEnumerable<ProjectResponse> Projects { get; init; } = [];
+    public IEnumerable<CompliantProjectResponse> Projects { get; init; } = [];
 }

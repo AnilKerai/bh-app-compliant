@@ -1,66 +1,117 @@
 ﻿using BuildHub.App.Compliant.Application.Models;
 using BuildHub.App.Compliant.External;
 using BuildHub.App.Compliant.External.Models;
+using ExternalDocumentType = BuildHub.App.Compliant.External.Models.DocumentType;
+using ViewModelDocumentType = BuildHub.App.Compliant.Application.Models.DocumentType;
 
 namespace BuildHub.App.Compliant.Application.Services;
 
 public interface IProjectService
 {
-    Task<IEnumerable<ProjectViewModel>> GetProjects(Guid customerId);
-    Task<ProjectViewModel> GetProjectById(Guid projectId);
+    Task<IEnumerable<ComplianceProjectViewModel>> GetProjects(Guid clientId);
+    Task<ComplianceProjectViewModel> GetProjectById(Guid projectId);
 }
 
 public class ProjectService(
     IBuildHubClient buildHubClient
     ) : IProjectService
 {
-    public async Task<IEnumerable<ProjectViewModel>> GetProjects(Guid customerId)
+    public async Task<IEnumerable<ComplianceProjectViewModel>> GetProjects(Guid clientId)
     {
         var projects = await buildHubClient.GetProjectBriefsAsync();
         
-        var projectViewModels = projects.Select(
-            project => new ProjectViewModel
-                {
-                    Id = project.Id,
-                    ClientId = project.ClientId,
-                    Overview = project.Overview,
-                    Reference = project.Reference,
-                    ProjectStartDate = project.ProjectStartDate.UtcDateTime,
-                    Evidence = project.Evidence.Select(evidenceResponse => new EvidenceViewModel
-                    {
-                        Id = evidenceResponse.Id,
-                        DateUploaded = evidenceResponse.DateUploaded.UtcDateTime,
-                        Name = evidenceResponse.Name,
-                        Type = evidenceResponse.Type,
-                        Url = evidenceResponse.Url
-                    })
-                }
-            );
+        var projectViewModels = 
+            projects
+                .Select(MapComplianceProjectViewModel)
+                .ToList();
         
         return projectViewModels;
     }
 
-    public async Task<ProjectViewModel> GetProjectById(Guid projectId)
+    public async Task<ComplianceProjectViewModel> GetProjectById(Guid projectId)
     {
         var project = await buildHubClient.GetProjectBriefByIdAsync(projectId);
         
-        var projectViewModel = new ProjectViewModel 
+        var projectViewModel = MapComplianceProjectViewModel(project);
+        
+        return projectViewModel;
+    }
+
+    private static ComplianceProjectViewModel MapComplianceProjectViewModel(CompliantProjectResponse project)
+    {
+        return new ComplianceProjectViewModel 
         {
             Id = project.Id,
             ClientId = project.ClientId,
-            Overview = project.Overview,
+            ProjectName = project.ProjectName,
+            ProjectLocation = project.ProjectLocation,
             Reference = project.Reference,
-            ProjectStartDate = project.ProjectStartDate.UtcDateTime,
-            Evidence = project.Evidence.Select(evidenceResponse => new EvidenceViewModel
+            StartDate = project.StartDate,
+            EndDate = project.EndDate,
+            Overview = project.Overview,
+            Evidence = project.Evidence.Select(evidence => new EvidenceViewModel
             {
-                Id = evidenceResponse.Id,
-                DateUploaded = evidenceResponse.DateUploaded.UtcDateTime,
-                Name = evidenceResponse.Name,
-                Type = evidenceResponse.Type,
-                Url = evidenceResponse.Url
-            })
+                DocumentId = evidence.DocumentId,
+                DocumentName = evidence.DocumentName,
+                DocumentType = MapDocumentType(evidence.DocumentType),
+                UploadDate = evidence.UploadDate,
+                UploadedBy = evidence.UploadedBy,
+                IsVerified = evidence.IsVerified,
+                VerificationDate = evidence.VerificationDate,
+                VerifiedBy = evidence.VerifiedBy,
+                Url = evidence.Url
+            }).ToList(),
+            ComplianceStatusViewModel = new ComplianceStatusViewModel
+            {
+                CheckedBy = project.ComplianceStatus.CheckedBy, 
+                IsCompliant = project.ComplianceStatus.IsCompliant, 
+                LastComplianceCheckDate = project.ComplianceStatus.LastComplianceCheckDate, 
+                NonComplianceReasons = project.ComplianceStatus.NonComplianceReasons
+            },
+            AuditTrails = project.AuditTrails.Select(audit => new AuditTrailViewModel
+            {
+                AuditId = audit.AuditId,
+                Remarks = audit.Remarks,
+                Timestamp = audit.Timestamp,
+                ActionPerformed = audit.ActionPerformed,
+                PerformedBy = new UserViewModel
+                {
+                    Email = audit.PerformedBy.Email,
+                    FullName = audit.PerformedBy.FullName,
+                    UserId = audit.PerformedBy.UserId,
+                    Role = new RoleViewModel
+                    {
+                        UserId = audit.PerformedBy.Role.UserId, 
+                        IsRequired = audit.PerformedBy.Role.IsRequired, 
+                        RoleName = audit.PerformedBy.Role.RoleName, 
+                        UserName = audit.PerformedBy.Role.UserName,
+                    }
+                }
+            }).ToList()
         };
-        
-        return projectViewModel;
+    }
+
+    private static ViewModelDocumentType MapDocumentType(ExternalDocumentType documentType)
+    {
+        switch (documentType)
+        {
+            case ExternalDocumentType.None:
+                return ViewModelDocumentType.None;
+            case ExternalDocumentType.FireSafetyPlan:
+                return ViewModelDocumentType.FireSafetyPlan;
+            case ExternalDocumentType.StructuralReport:
+                return ViewModelDocumentType.StructuralReport;
+            case ExternalDocumentType.EnvironmentalImpactAssessment:
+                return ViewModelDocumentType.EnvironmentalImpactAssessment;
+            case ExternalDocumentType.HealthAndSafetyPlan:
+                return ViewModelDocumentType.HealthAndSafetyPlan;
+            case ExternalDocumentType.RiskAssessment:
+                return ViewModelDocumentType.RiskAssessment;
+            case ExternalDocumentType.MethodStatement:
+                return ViewModelDocumentType.MethodStatement;
+            case ExternalDocumentType.Other:
+            default:
+                return ViewModelDocumentType.Other;
+        }
     }
 }

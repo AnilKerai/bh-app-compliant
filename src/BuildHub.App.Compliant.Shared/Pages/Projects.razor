@@ -14,7 +14,7 @@
 else
 {
     
-    <MudDataGrid T="ProjectViewModel" MultiSelection="true" Items="@_projects" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@QuickFilter"
+    <MudDataGrid T="ComplianceProjectViewModel" MultiSelection="true" Items="@_projects" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@QuickFilter"
                  Hideable="true" Hover="true" RowClick="@RowClicked">
         <ToolBarContent>
             <MudText Typo="Typo.h6">Projects</MudText>
@@ -23,25 +23,25 @@ else
                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
         <Columns>
-            <SelectColumn T="ProjectViewModel" />
+            <SelectColumn T="ComplianceProjectViewModel" />
             <PropertyColumn Property="x => x.Id" Title="Id" Sortable="false" Filterable="false" />
             <PropertyColumn Property="x => x.Reference" SortBy="@SortBy" />
             <PropertyColumn Property="x => x.Overview" />
-            <PropertyColumn Property="x => x.ProjectStartDate" />
+            <PropertyColumn Property="x => x.StartDate" />
         </Columns>
         <PagerContent>
-            <MudDataGridPager T="ProjectViewModel" />
+            <MudDataGridPager T="ComplianceProjectViewModel" />
         </PagerContent>
     </MudDataGrid>
 }
 
 @code {
-    private IEnumerable<ProjectViewModel> _projects = null!;
+    private IEnumerable<ComplianceProjectViewModel> _projects = null!;
     private string? _searchString;
     
-    private Func<ProjectViewModel, object> SortBy => x => x.Reference;
+    private Func<ComplianceProjectViewModel, object> SortBy => x => x.Reference;
     
-    private Func<ProjectViewModel, bool> QuickFilter => x =>
+    private Func<ComplianceProjectViewModel, bool> QuickFilter => x =>
     {
         if (string.IsNullOrWhiteSpace(_searchString))
             return true;
@@ -57,7 +57,7 @@ else
         _projects = await ProjectService.GetProjects(Guid.NewGuid());
     }
 
-    void RowClicked(DataGridRowClickEventArgs<ProjectViewModel> args)
+    void RowClicked(DataGridRowClickEventArgs<ComplianceProjectViewModel> args)
     {
         Navigation.NavigateTo($"/project/{args.Item.Id}");
         // Navigation.NavigateTo($"v2/project/{args.Item.Id}");

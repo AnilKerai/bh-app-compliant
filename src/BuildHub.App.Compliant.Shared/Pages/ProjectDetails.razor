@@ -7,7 +7,7 @@
 
 <PageTitle>Project Details</PageTitle>
 
-@if (_project is null)
+@if (_complianceProject is null)
 {
     <Loading />
 }
@@ -23,19 +23,19 @@ else
                     <MudGrid Spacing="3" Class="mt-3">
                         <MudItem xs="12" sm="6">
                             <MudText Typo="Typo.h6">Project Name:</MudText>
-                            <MudText Typo="Typo.body1">@_project.Reference</MudText>
+                            <MudText Typo="Typo.body1">@_complianceProject.Reference</MudText>
                         </MudItem>
                         <MudItem xs="12" sm="6">
                             <MudText Typo="Typo.h6">Description:</MudText>
-                            <MudText Typo="Typo.body1">@_project.Overview</MudText>
+                            <MudText Typo="Typo.body1">@_complianceProject.Overview</MudText>
                         </MudItem>
                         <MudItem xs="12" sm="6">
                             <MudText Typo="Typo.h6">Start Date:</MudText>
-                            <MudText Typo="Typo.body1">@_project.ProjectStartDate.ToShortDateString()</MudText>
+                            <MudText Typo="Typo.body1">@_complianceProject.StartDate.ToShortDateString()</MudText>
                         </MudItem>
                         <MudItem xs="12" sm="6">
                             <MudText Typo="Typo.h6">End Date:</MudText>
-                            <MudText Typo="Typo.body1">@_project.ProjectStartDate.ToShortDateString()</MudText>
+                            <MudText Typo="Typo.body1">@_complianceProject.EndDate.ToShortDateString()</MudText>
                         </MudItem>
                     </MudGrid>
                 </MudPaper>
@@ -45,16 +45,16 @@ else
             <MudItem xs="12">
                 <MudPaper Elevation="1" Class="pa-4">
                     <MudText Typo="Typo.h5">Associated Documents</MudText>
-                    <MudTable Items="_project.Evidence" Dense="true" Hover="true" Class="mt-2">
+                    <MudTable Items="_complianceProject.Evidence" Dense="true" Hover="true" Class="mt-2">
                         <HeaderContent>
                             <MudTh>Document Name</MudTh>
                             <MudTh>Type</MudTh>
                             <MudTh>Date Uploaded</MudTh>
                         </HeaderContent>
                         <RowTemplate>
-                            <MudTd>@context.Name</MudTd>
-                            <MudTd>@context.Type</MudTd>
-                            <MudTd>@context.DateUploaded.ToShortDateString()</MudTd>
+                            <MudTd>@context.DocumentName</MudTd>
+                            <MudTd>@context.DocumentType</MudTd>
+                            <MudTd>@context.UploadDate.ToShortDateString()</MudTd>
                         </RowTemplate>
                     </MudTable>
                 </MudPaper>
@@ -70,11 +70,11 @@ else
     [Inject]
     IProjectService ProjectService { get; set; } = null!;
 
-    private ProjectViewModel _project = null!;
+    private ComplianceProjectViewModel _complianceProject = null!;
     
     protected override async Task OnInitializedAsync()
     {
-        _project = await ProjectService.GetProjectById(Id);
+        _complianceProject = await ProjectService.GetProjectById(Id);
     }
 
     private async Task SaveChanges()

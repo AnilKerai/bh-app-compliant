@@ -5,19 +5,19 @@ namespace BuildHub.App.Compliant.External;
 
 public interface IBuildHubClient
 {
-    Task<IEnumerable<ProjectResponse>> GetProjectBriefsAsync();
-    Task<ProjectResponse> GetProjectBriefByIdAsync(Guid projectId);
+    Task<IEnumerable<CompliantProjectResponse>> GetProjectBriefsAsync();
+    Task<CompliantProjectResponse> GetProjectBriefByIdAsync(Guid projectId);
 }
 
 public class BuildHubClient(
     IHttpClientFactory httpClientFactory
     ) : IBuildHubClient
 {
-    public async Task<IEnumerable<ProjectResponse>> GetProjectBriefsAsync()
+    public async Task<IEnumerable<CompliantProjectResponse>> GetProjectBriefsAsync()
     {
         var httpClient = GetHttpClient();
 
-        var response = await httpClient.GetAsync("project-brief");
+        var response = await httpClient.GetAsync("compliant/project");
         
         if (!response.IsSuccessStatusCode)
             throw new Exception("Failed to get project briefs");
@@ -27,14 +27,14 @@ public class BuildHubClient(
         
         var projectBriefs = JsonConvert.DeserializeObject<ProjectsResponse>(projectBriefsJson);
         
-        return projectBriefs?.Projects ?? Enumerable.Empty<ProjectResponse>();
+        return projectBriefs?.Projects ?? Enumerable.Empty<CompliantProjectResponse>();
     }
 
-    public async Task<ProjectResponse> GetProjectBriefByIdAsync(Guid projectId)
+    public async Task<CompliantProjectResponse> GetProjectBriefByIdAsync(Guid projectId)
     {
         var httpClient = GetHttpClient();
 
-        var response = await httpClient.GetAsync($"project-brief/{projectId}");
+        var response = await httpClient.GetAsync($"compliant/project/{projectId}");
         
         if (!response.IsSuccessStatusCode)
             throw new Exception("Failed to get project briefs");
@@ -42,7 +42,7 @@ public class BuildHubClient(
         var projectBriefJson = 
             await response.Content.ReadAsStringAsync();
         
-        var projectBrief = JsonConvert.DeserializeObject<ProjectResponse>(projectBriefJson);
+        var projectBrief = JsonConvert.DeserializeObject<CompliantProjectResponse>(projectBriefJson);
         
         if (projectBrief is null)
             throw new Exception("Failed to get project briefs");
