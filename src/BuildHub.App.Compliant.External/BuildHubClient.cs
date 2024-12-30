@@ -1,4 +1,5 @@
-﻿using BuildHub.App.Compliant.External.Models;
+﻿using System.Text;
+using BuildHub.App.Compliant.External.Models;
 using Newtonsoft.Json;
 
 namespace BuildHub.App.Compliant.External;
@@ -7,6 +8,7 @@ public interface IBuildHubClient
 {
     Task<IEnumerable<CompliantProjectResponse>> GetProjectBriefsAsync();
     Task<CompliantProjectResponse> GetProjectBriefByIdAsync(Guid projectId);
+    Task<Guid> CreateProjectAsync(CreateCompliantProjectRequest createProjectRequest);
 }
 
 public class BuildHubClient(
@@ -25,7 +27,7 @@ public class BuildHubClient(
         var projectBriefsJson = 
             await response.Content.ReadAsStringAsync();
         
-        var projectBriefs = JsonConvert.DeserializeObject<ProjectsResponse>(projectBriefsJson);
+        var projectBriefs = JsonConvert.DeserializeObject<CompliantProjectsResponse>(projectBriefsJson);
         
         return projectBriefs?.Projects ?? Enumerable.Empty<CompliantProjectResponse>();
     }
@@ -49,7 +51,27 @@ public class BuildHubClient(
         
         return projectBrief;
     }
-    
+
+    public async Task<Guid> CreateProjectAsync(CreateCompliantProjectRequest createProjectRequest)
+    {
+        var httpClient = GetHttpClient();
+
+        var createProjectRequestJson = 
+            JsonConvert.SerializeObject(createProjectRequest);
+        
+        var content = new StringContent(createProjectRequestJson, Encoding.UTF8, "application/json");
+        
+        var response = await httpClient.PostAsync("compliant/project", content);
+        
+        if (!response.IsSuccessStatusCode)
+            throw new Exception("Failed to create project");
+        
+        var json = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<CreateProjectResponse>(json);
+        
+        return result?.Id ?? Guid.Empty;
+    }
+
     private HttpClient GetHttpClient()
     {
         var httpClient = httpClientFactory.CreateClient();

@@ -1,0 +1,57 @@
+﻿@using BuildHub.App.Compliant.Application.Models
+@using BuildHub.App.Compliant.Application.Services
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h5" Class="mb-2">Add New Project</MudText>
+        <MudForm @ref="_form" @bind-IsValid="@_isValid" @bind-Errors="@_errors">
+            <MudTextField Label="Project Name" @bind-Value="_project.ProjectName" Required="true" RequiredError="Project Name is required" For="@(() => _project.ProjectName)"/>
+            <MudTextField Label="Reference" @bind-Value="_project.Reference" Required="false" For="@(() => _project.Reference)"/>
+            <MudTextField Label="Overview" @bind-Value="_project.Overview" Lines="3" Required="true" RequiredError="Overview is required" For="@(() => _project.Overview)"/>
+            <MudTextField Label="Location" @bind-Value="_project.ProjectLocation" For="@(() => _project.ProjectLocation)"/>
+            <MudGrid Spacing="2" Class="mt-4">
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="Start Date" Type="date" @bind-Value="_project.StartDate" Required="true"/>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="End Date" Type="date" @bind-Value="_project.EndDate" Required="true"/>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="async () => await SubmitForm()" Color="Color.Primary">Save</MudButton>
+        <MudButton OnClick="CloseDialog" Color="Color.Secondary">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    private MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Inject]
+    private IProjectService ProjectService { get; set; } = null!;
+    
+    private MudForm _form;
+    private bool _isValid;
+    private string[] _errors = [];
+
+    private ComplianceProjectViewModel _project = new();
+
+    private async Task SubmitForm()
+    {
+        await _form.Validate();
+        
+        if (_form.IsValid)
+        {
+            var projectId = await ProjectService.CreateProject(_project);
+            _project.Id = projectId;
+            MudDialog.Close(DialogResult.Ok(_project));
+        }
+    }
+
+    private void CloseDialog()
+    {
+        MudDialog.Cancel();
+    }
+}

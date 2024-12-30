@@ -10,6 +10,7 @@ public interface IProjectService
 {
     Task<IEnumerable<ComplianceProjectViewModel>> GetProjects(Guid clientId);
     Task<ComplianceProjectViewModel> GetProjectById(Guid projectId);
+    Task<Guid> CreateProject(ComplianceProjectViewModel project);
 }
 
 public class ProjectService(
@@ -35,6 +36,22 @@ public class ProjectService(
         var projectViewModel = MapComplianceProjectViewModel(project);
         
         return projectViewModel;
+    }
+
+    public Task<Guid> CreateProject(ComplianceProjectViewModel project)
+    {
+        var createProjectRequest = new CreateCompliantProjectRequest
+        {
+            ClientId = project.ClientId,
+            ProjectName = project.ProjectName,
+            ProjectLocation = project.ProjectLocation,
+            Reference = project.Reference,
+            Overview = project.Overview,
+            StartDate = project.StartDate,
+            EndDate = project.EndDate
+        };
+        
+        return buildHubClient.CreateProjectAsync(createProjectRequest);
     }
 
     private static ComplianceProjectViewModel MapComplianceProjectViewModel(CompliantProjectResponse project)

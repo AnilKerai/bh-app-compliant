@@ -4,6 +4,8 @@
 
 @inject IProjectService ProjectService
 @inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <PageTitle>Projects</PageTitle>
 
@@ -13,34 +15,37 @@
 }
 else
 {
-    
-    <MudDataGrid T="ComplianceProjectViewModel" MultiSelection="true" Items="@_projects" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@QuickFilter"
-                 Hideable="true" Hover="true" RowClick="@RowClicked">
-        <ToolBarContent>
-            <MudText Typo="Typo.h6">Projects</MudText>
-            <MudSpacer />
-            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
-                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-        </ToolBarContent>
-        <Columns>
-            <SelectColumn T="ComplianceProjectViewModel" />
-            <PropertyColumn Property="x => x.Id" Title="Id" Sortable="false" Filterable="false" />
-            <PropertyColumn Property="x => x.Reference" SortBy="@SortBy" />
-            <PropertyColumn Property="x => x.Overview" />
-            <PropertyColumn Property="x => x.StartDate" />
-        </Columns>
-        <PagerContent>
-            <MudDataGridPager T="ComplianceProjectViewModel" />
-        </PagerContent>
-    </MudDataGrid>
+    <MudContainer>
+        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="async () => await OpenAddProjectDialog()" />
+        @* <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddProjectDialog" /> *@
+    </MudContainer>
+    <MudContainer>
+        <MudDataGrid T="ComplianceProjectViewModel" MultiSelection="true" Items="@_projects" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@QuickFilter"
+                     Hideable="true" Hover="true" RowClick="@RowClicked">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Projects</MudText>
+                <MudSpacer />
+                <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <Columns>
+                <SelectColumn T="ComplianceProjectViewModel" />
+                <PropertyColumn Property="x => x.Id" Title="Id" Sortable="false" Filterable="false" />
+                <PropertyColumn Property="x => x.Reference" SortBy="@SortBy" />
+                <PropertyColumn Property="x => x.Overview" />
+                <PropertyColumn Property="x => x.StartDate" />
+            </Columns>
+            <PagerContent>
+                <MudDataGridPager T="ComplianceProjectViewModel" />
+            </PagerContent>
+        </MudDataGrid>
+    </MudContainer>
 }
 
 @code {
-    private IEnumerable<ComplianceProjectViewModel> _projects = null!;
+    private List<ComplianceProjectViewModel> _projects = null!;
     private string? _searchString;
-    
     private Func<ComplianceProjectViewModel, object> SortBy => x => x.Reference;
-    
     private Func<ComplianceProjectViewModel, bool> QuickFilter => x =>
     {
         if (string.IsNullOrWhiteSpace(_searchString))
@@ -54,12 +59,27 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _projects = await ProjectService.GetProjects(Guid.NewGuid());
+        _projects = (await ProjectService.GetProjects(Guid.NewGuid())).ToList();
     }
 
-    void RowClicked(DataGridRowClickEventArgs<ComplianceProjectViewModel> args)
+    private void RowClicked(DataGridRowClickEventArgs<ComplianceProjectViewModel> args)
     {
         Navigation.NavigateTo($"/project/{args.Item.Id}");
-        // Navigation.NavigateTo($"v2/project/{args.Item.Id}");
+    }
+    
+    private async Task OpenAddProjectDialog()
+    {
+        var parameters = new DialogParameters();
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = DialogService.Show<AddProjectDialog>("Add New Project", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false })
+        {
+            var newProject = (ComplianceProjectViewModel)result.Data!;
+            _projects.Add(newProject);
+            Snackbar.Add($"New project '{newProject.ProjectName}' added successfully!", Severity.Success);
+        }
     }
 }
