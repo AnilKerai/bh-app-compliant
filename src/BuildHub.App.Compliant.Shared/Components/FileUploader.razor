@@ -1,0 +1,47 @@
+﻿<MudFileUpload T="IReadOnlyList<IBrowserFile>" OnFilesChanged="HandleFileChangeAsync">
+    <ActivatorContent>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.CloudUpload">
+            Upload Evidence
+        </MudButton>
+    </ActivatorContent>
+</MudFileUpload>
+
+@if (_uploadedFiles != null)
+{
+    <MudList T="string">
+        @foreach (var file in _uploadedFiles)
+        {
+            <MudListItem Icon="@Icons.Material.Filled.AttachFile">
+                @file.Name <code>@file.Size bytes</code>
+            </MudListItem>
+        }
+    </MudList>
+}
+
+@code
+{
+    [Parameter]
+    public Action<IBrowserFile>? FilesUploaded { get; set; }
+
+    readonly IList<IBrowserFile> _uploadedFiles = new List<IBrowserFile>();
+    
+    private async Task HandleFileChangeAsync(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            // var fileStream = file.OpenReadStream(1024 * 1024 * 5); // Limit stream to 5 MB
+            // var memoryStream = new MemoryStream();
+            //
+            // await fileStream.CopyToAsync(memoryStream); // Copy file to memory stream
+
+            _uploadedFiles.Add(file);
+
+            // Simulate saving to a server or database
+            await Task.Delay(100); // Mocking an async process
+            
+            FilesUploaded?.Invoke(file);
+        }
+    }
+}

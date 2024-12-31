@@ -1,6 +1,7 @@
 ﻿@page "/projects"
 @using BuildHub.App.Compliant.Application.Models
 @using BuildHub.App.Compliant.Application.Services
+@using BuildHub.App.Compliant.Shared.Dialogs
 
 @inject IProjectService ProjectService
 @inject NavigationManager Navigation
@@ -11,7 +12,7 @@
 
 @if (_projects is null)
 {
-    <Loading />
+    <Loader />
 }
 else
 {

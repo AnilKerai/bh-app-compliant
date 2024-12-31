@@ -9,7 +9,7 @@
 
 @if (_complianceProject is null)
 {
-    <Loading />
+    <loader />
 }
 else
 {
@@ -76,6 +76,7 @@ else
             <!-- Evidence Section -->
             <MudItem xs="12">
                 <MudPaper Elevation="1" Class="pa-4">
+                    <FileUploader FilesUploaded="AddFileToList" />
                     <MudText Typo="Typo.h5">Evidence</MudText>
                     <MudTable Items="_complianceProject.Evidence" Dense="true" Hover="true" Class="mt-3">
                         <HeaderContent>
@@ -138,6 +139,11 @@ else
     protected override async Task OnInitializedAsync()
     {
         _complianceProject = await ProjectService.GetProjectById(Id);
+    }
+
+    private static void AddFileToList(IBrowserFile file)
+    {
+        Console.WriteLine($"File: {file.Name} ({file.Size} bytes)");
     }
 
     private async Task SaveChanges()
