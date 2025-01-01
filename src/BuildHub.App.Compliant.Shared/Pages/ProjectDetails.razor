@@ -89,7 +89,7 @@ else
                             <MudTh>Verified</MudTh>
                             <MudTh>Verified By</MudTh>
                             <MudTh>Verified Date</MudTh>
-                            <MudTh>URL</MudTh>
+                            <MudTh>Download</MudTh>
                         </HeaderContent>
                         <RowTemplate>
                             <MudTd>@context.DocumentName</MudTd>
@@ -99,7 +99,9 @@ else
                             <MudTd>@(context.IsVerified ? "Yes" : "No")</MudTd>
                             <MudTd>@context.VerifiedBy</MudTd>
                             <MudTd>@context.VerificationDate?.ToShortDateString()</MudTd>
-                            <MudTd>@context.Url</MudTd>
+                            <MudTd>
+                                <MudIconButton Icon="@Icons.Material.Filled.CloudDownload" Color="Color.Secondary" aria-label="download" Href="@context.Url"/>
+                            </MudTd>
                         </RowTemplate>
                     </MudTable>
                 </MudPaper>

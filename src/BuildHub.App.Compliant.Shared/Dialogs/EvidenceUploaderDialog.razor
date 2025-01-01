@@ -32,6 +32,12 @@
         
         if (_form.IsValid)
         {
+            foreach (var evidenceViewModel in _uploadedEvidence)
+            {
+                evidenceViewModel.DocumentType = _evidenceMetadata.DocumentType;
+                evidenceViewModel.DocumentName = _evidenceMetadata.DocumentName;
+            }
+            
             MudDialog.Close(DialogResult.Ok(_uploadedEvidence));
         }
     }
@@ -39,8 +45,6 @@
     private void AddFileToList(EvidenceViewModel uploadedEvidence)
     {
         Console.WriteLine($"File: {uploadedEvidence.DocumentName} ({uploadedEvidence.DocumentType})");
-        uploadedEvidence.DocumentType = _evidenceMetadata.DocumentType;
-        uploadedEvidence.DocumentName = _evidenceMetadata.DocumentName;
         _uploadedEvidence.Add(uploadedEvidence);
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net.Http.Headers;
+using System.Text;
 using BuildHub.App.Compliant.External.Models;
 using Newtonsoft.Json;
 
@@ -10,6 +11,7 @@ public interface IBuildHubClient
     Task<CompliantProjectResponse> GetProjectBriefByIdAsync(Guid projectId);
     Task<Guid> CreateProjectAsync(CreateCompliantProjectRequest createProjectRequest);
     Task CreateEvidenceAsync(Guid projectId, CreateCompliantEvidenceRequest createEvidenceRequest);
+    Task<string> UploadEvidenceAsync(string fileName, Stream fileStream);
 }
 
 public class BuildHubClient(
@@ -88,11 +90,40 @@ public class BuildHubClient(
             throw new Exception("Failed to create project");
     }
 
+    public async Task<string> UploadEvidenceAsync(string fileName, Stream fileStream)
+    {
+        var httpClient = GetHttpClient();
+        using var content = new MultipartFormDataContent();
+        fileStream.Position = 0;
+        
+        using var fileContent = new StreamContent(fileStream);
+
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
+        content.Add(fileContent, "file", fileName);
+
+        var response = await httpClient.PostAsync("compliant/evidence/upload", content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Failed to upload file: {response.ReasonPhrase} - {body}");
+        }
+        
+        var json = await response.Content.ReadAsStringAsync();
+        var uri = JsonConvert.DeserializeObject<Uri>(json);
+
+        if (uri is null)
+            throw new Exception("Failed to deserialize file link");
+        
+        return uri.ToString();
+    }
+
     private HttpClient GetHttpClient()
     {
         var httpClient = httpClientFactory.CreateClient();
 
         httpClient.BaseAddress = new Uri("https://bh-api-dev.azurewebsites.net/api/");
+        // httpClient.BaseAddress = new Uri(" http://localhost:7015/api/");
         return httpClient;
     }
 }
