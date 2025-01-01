@@ -16,8 +16,8 @@
 }
 else
 {
-    <MudContainer>
-        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddProjectDialog" />
+    <MudContainer Class="d-flex flex-row-reverse flex-grow-1 gap-4">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddProjectDialog">Add Project</MudButton>
     </MudContainer>
     <MudContainer>
         <MudDataGrid T="ComplianceProjectViewModel" MultiSelection="true" Items="@_projects" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@QuickFilter"
