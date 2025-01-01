@@ -1,4 +1,5 @@
-﻿<MudFileUpload T="IReadOnlyList<IBrowserFile>" OnFilesChanged="HandleFileChangeAsync">
+﻿@using BuildHub.App.Compliant.Application.Models
+<MudFileUpload T="IReadOnlyList<IBrowserFile>" OnFilesChanged="HandleFileChangeAsync">
     <ActivatorContent>
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
@@ -23,7 +24,7 @@
 @code
 {
     [Parameter]
-    public Action<IBrowserFile>? FilesUploaded { get; set; }
+    public Action<EvidenceViewModel>? FilesUploaded { get; set; }
 
     readonly IList<IBrowserFile> _uploadedFiles = new List<IBrowserFile>();
     
@@ -31,17 +32,26 @@
     {
         foreach (var file in e.GetMultipleFiles())
         {
-            // var fileStream = file.OpenReadStream(1024 * 1024 * 5); // Limit stream to 5 MB
-            // var memoryStream = new MemoryStream();
-            //
-            // await fileStream.CopyToAsync(memoryStream); // Copy file to memory stream
+            var fileStream = file.OpenReadStream(1024 * 1024 * 5);
+            var memoryStream = new MemoryStream();
+            
+            await fileStream.CopyToAsync(memoryStream);
 
             _uploadedFiles.Add(file);
 
             // Simulate saving to a server or database
             await Task.Delay(100); // Mocking an async process
+            var url = "https://example.com";
             
-            FilesUploaded?.Invoke(file);
+            FilesUploaded?.Invoke(new EvidenceViewModel
+            {
+                DocumentId = Guid.NewGuid(),
+                DocumentName = file.Name,
+                DocumentType = DocumentType.None,
+                Url = url,
+                UploadDate = DateTime.UtcNow,
+                UploadedBy = "AK"
+            });
         }
     }
 }

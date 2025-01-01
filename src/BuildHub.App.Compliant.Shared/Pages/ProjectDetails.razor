@@ -2,8 +2,10 @@
 
 @using BuildHub.App.Compliant.Application.Models
 @using BuildHub.App.Compliant.Application.Services
+@using BuildHub.App.Compliant.Shared.Dialogs
 
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <PageTitle>Project Details</PageTitle>
 
@@ -76,7 +78,7 @@ else
             <!-- Evidence Section -->
             <MudItem xs="12">
                 <MudPaper Elevation="1" Class="pa-4">
-                    <FileUploader FilesUploaded="AddFileToList" />
+                    <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenUploadEvidenceDialog" />
                     <MudText Typo="Typo.h5">Evidence</MudText>
                     <MudTable Items="_complianceProject.Evidence" Dense="true" Hover="true" Class="mt-3">
                         <HeaderContent>
@@ -141,9 +143,24 @@ else
         _complianceProject = await ProjectService.GetProjectById(Id);
     }
 
-    private static void AddFileToList(IBrowserFile file)
+    private async Task OpenUploadEvidenceDialog()
     {
-        Console.WriteLine($"File: {file.Name} ({file.Size} bytes)");
+        var parameters = new DialogParameters();
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<EvidenceUploaderDialog>("Upload Evidence", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false })
+        {
+            var newEvidenceList = (List<EvidenceViewModel>)result.Data!;
+
+            foreach (var newEvidence in newEvidenceList)
+            {
+                _complianceProject.Evidence.Add(newEvidence);
+                Snackbar.Add($"File '{newEvidence.DocumentName}' added successfully!", Severity.Success);
+            }
+        }
     }
 
     private async Task SaveChanges()

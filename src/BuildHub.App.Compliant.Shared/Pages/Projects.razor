@@ -17,8 +17,7 @@
 else
 {
     <MudContainer>
-        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="async () => await OpenAddProjectDialog()" />
-        @* <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddProjectDialog" /> *@
+        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="OpenAddProjectDialog" />
     </MudContainer>
     <MudContainer>
         <MudDataGrid T="ComplianceProjectViewModel" MultiSelection="true" Items="@_projects" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@QuickFilter"
@@ -73,7 +72,7 @@ else
         var parameters = new DialogParameters();
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
 
-        var dialog = DialogService.Show<AddProjectDialog>("Add New Project", parameters, options);
+        var dialog = await DialogService.ShowAsync<AddProjectDialog>("Add New Project", parameters, options);
         var result = await dialog.Result;
 
         if (result is { Canceled: false })

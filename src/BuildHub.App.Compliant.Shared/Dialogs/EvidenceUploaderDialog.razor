@@ -1,0 +1,48 @@
+﻿@using BuildHub.App.Compliant.Application.Models
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h5" Class="mb-2">Upload Evidence</MudText>
+        <MudForm @ref="_form" @bind-IsValid="@_isValid" @bind-Errors="@_errors">
+            <MudTextField Label="Document Name" @bind-Value="_evidenceMetadata.DocumentName" Required="true" RequiredError="Document Name is required" For="@(() => _evidenceMetadata.DocumentName)"/>
+            <MudTextField Label="Document Type" @bind-Value="_evidenceMetadata.DocumentType" Required="true" RequiredError="Document Type is required" For="@(() => _evidenceMetadata.DocumentType)"/>
+            <EvidenceUploader FilesUploaded="AddFileToList" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="SubmitForm" Color="Color.Primary">Save</MudButton>
+        <MudButton OnClick="CloseDialog" Color="Color.Secondary">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    private MudDialogInstance MudDialog { get; set; } = null!;
+    
+    private MudForm _form;
+    private bool _isValid;
+    private string[] _errors = [];
+
+    private EvidenceViewModel _evidenceMetadata = new();
+    private List<EvidenceViewModel> _uploadedEvidence = [];
+
+    private async Task SubmitForm()
+    {
+        await _form.Validate();
+        
+        if (_form.IsValid)
+        {
+            MudDialog.Close(DialogResult.Ok(_uploadedEvidence));
+        }
+    }
+    
+    private void AddFileToList(EvidenceViewModel uploadedEvidence)
+    {
+        Console.WriteLine($"File: {uploadedEvidence.DocumentName} ({uploadedEvidence.DocumentType})");
+        uploadedEvidence.DocumentType = _evidenceMetadata.DocumentType;
+        uploadedEvidence.DocumentName = _evidenceMetadata.DocumentName;
+        _uploadedEvidence.Add(uploadedEvidence);
+    }
+
+    private void CloseDialog() => MudDialog.Cancel();
+}
