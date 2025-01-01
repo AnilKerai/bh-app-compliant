@@ -59,7 +59,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _projects = (await ProjectService.GetProjects(Guid.NewGuid())).ToList();
+        _projects = (await ProjectService.GetProjectsAsync(Guid.NewGuid())).ToList();
     }
 
     private void RowClicked(DataGridRowClickEventArgs<ComplianceProjectViewModel> args)

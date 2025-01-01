@@ -140,7 +140,7 @@ else
     
     protected override async Task OnInitializedAsync()
     {
-        _complianceProject = await ProjectService.GetProjectById(Id);
+        _complianceProject = await ProjectService.GetProjectByIdAsync(Id);
     }
 
     private async Task OpenUploadEvidenceDialog()
@@ -158,6 +158,7 @@ else
             foreach (var newEvidence in newEvidenceList)
             {
                 _complianceProject.Evidence.Add(newEvidence);
+                await ProjectService.CreateEvidenceAsync(Id, newEvidence);
                 Snackbar.Add($"File '{newEvidence.DocumentName}' added successfully!", Severity.Success);
             }
         }

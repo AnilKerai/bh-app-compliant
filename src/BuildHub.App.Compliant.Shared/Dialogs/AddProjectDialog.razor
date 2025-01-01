@@ -44,7 +44,7 @@
         
         if (_form.IsValid)
         {
-            var projectId = await ProjectService.CreateProject(_project);
+            var projectId = await ProjectService.CreateProjectAsync(_project);
             _project.Id = projectId;
             MudDialog.Close(DialogResult.Ok(_project));
         }

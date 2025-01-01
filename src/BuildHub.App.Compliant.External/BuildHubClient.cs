@@ -9,6 +9,7 @@ public interface IBuildHubClient
     Task<IEnumerable<CompliantProjectResponse>> GetProjectBriefsAsync();
     Task<CompliantProjectResponse> GetProjectBriefByIdAsync(Guid projectId);
     Task<Guid> CreateProjectAsync(CreateCompliantProjectRequest createProjectRequest);
+    Task CreateEvidenceAsync(Guid projectId, CreateCompliantEvidenceRequest createEvidenceRequest);
 }
 
 public class BuildHubClient(
@@ -67,9 +68,24 @@ public class BuildHubClient(
             throw new Exception("Failed to create project");
         
         var json = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<CreateProjectResponse>(json);
+        var result = JsonConvert.DeserializeObject<CreateCompliantProjectResponse>(json);
         
         return result?.Id ?? Guid.Empty;
+    }
+
+    public async Task CreateEvidenceAsync(Guid projectId, CreateCompliantEvidenceRequest createEvidenceRequest)
+    {
+        var httpClient = GetHttpClient();
+        
+        var createEvidenceRequestJson = 
+            JsonConvert.SerializeObject(createEvidenceRequest);
+        
+        var content = new StringContent(createEvidenceRequestJson, Encoding.UTF8, "application/json");
+        
+        var response = await httpClient.PostAsync($"compliant/evidence/{projectId}", content);
+        
+        if (!response.IsSuccessStatusCode)
+            throw new Exception("Failed to create project");
     }
 
     private HttpClient GetHttpClient()

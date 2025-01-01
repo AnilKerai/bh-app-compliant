@@ -8,16 +8,17 @@ namespace BuildHub.App.Compliant.Application.Services;
 
 public interface IProjectService
 {
-    Task<IEnumerable<ComplianceProjectViewModel>> GetProjects(Guid clientId);
-    Task<ComplianceProjectViewModel> GetProjectById(Guid projectId);
-    Task<Guid> CreateProject(ComplianceProjectViewModel project);
+    Task<IEnumerable<ComplianceProjectViewModel>> GetProjectsAsync(Guid clientId);
+    Task<ComplianceProjectViewModel> GetProjectByIdAsync(Guid projectId);
+    Task<Guid> CreateProjectAsync(ComplianceProjectViewModel project);
+    Task CreateEvidenceAsync(Guid projectId, EvidenceViewModel evidence);
 }
 
 public class ProjectService(
     IBuildHubClient buildHubClient
     ) : IProjectService
 {
-    public async Task<IEnumerable<ComplianceProjectViewModel>> GetProjects(Guid clientId)
+    public async Task<IEnumerable<ComplianceProjectViewModel>> GetProjectsAsync(Guid clientId)
     {
         var projects = await buildHubClient.GetProjectBriefsAsync();
         
@@ -29,7 +30,7 @@ public class ProjectService(
         return projectViewModels;
     }
 
-    public async Task<ComplianceProjectViewModel> GetProjectById(Guid projectId)
+    public async Task<ComplianceProjectViewModel> GetProjectByIdAsync(Guid projectId)
     {
         var project = await buildHubClient.GetProjectBriefByIdAsync(projectId);
         
@@ -38,7 +39,7 @@ public class ProjectService(
         return projectViewModel;
     }
 
-    public Task<Guid> CreateProject(ComplianceProjectViewModel project)
+    public Task<Guid> CreateProjectAsync(ComplianceProjectViewModel project)
     {
         var createProjectRequest = new CreateCompliantProjectRequest
         {
@@ -52,6 +53,21 @@ public class ProjectService(
         };
         
         return buildHubClient.CreateProjectAsync(createProjectRequest);
+    }
+
+    public Task CreateEvidenceAsync(Guid projectId, EvidenceViewModel evidence)
+    {
+        var createEvidenceRequest = new CreateCompliantEvidenceRequest
+        {
+            DocumentId = evidence.DocumentId,
+            DocumentName = evidence.DocumentName,
+            DocumentType = MapDocumentType(evidence.DocumentType),
+            UploadDate = evidence.UploadDate,
+            UploadedBy = evidence.UploadedBy,
+            Url = evidence.Url
+        };
+        
+        return buildHubClient.CreateEvidenceAsync(projectId, createEvidenceRequest);
     }
 
     private static ComplianceProjectViewModel MapComplianceProjectViewModel(CompliantProjectResponse project)
@@ -129,6 +145,30 @@ public class ProjectService(
             case ExternalDocumentType.Other:
             default:
                 return ViewModelDocumentType.Other;
+        }
+    }
+    
+    private static ExternalDocumentType MapDocumentType(ViewModelDocumentType documentType)
+    {
+        switch (documentType)
+        {
+            case ViewModelDocumentType.None:
+                return ExternalDocumentType.None;
+            case ViewModelDocumentType.FireSafetyPlan:
+                return ExternalDocumentType.FireSafetyPlan;
+            case ViewModelDocumentType.StructuralReport:
+                return ExternalDocumentType.StructuralReport;
+            case ViewModelDocumentType.EnvironmentalImpactAssessment:
+                return ExternalDocumentType.EnvironmentalImpactAssessment;
+            case ViewModelDocumentType.HealthAndSafetyPlan:
+                return ExternalDocumentType.HealthAndSafetyPlan;
+            case ViewModelDocumentType.RiskAssessment:
+                return ExternalDocumentType.RiskAssessment;
+            case ViewModelDocumentType.MethodStatement:
+                return ExternalDocumentType.MethodStatement;
+            case ViewModelDocumentType.Other:
+            default:
+                return ExternalDocumentType.Other;
         }
     }
 }

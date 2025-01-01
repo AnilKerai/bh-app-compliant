@@ -1,6 +1,6 @@
 ﻿namespace BuildHub.App.Compliant.External.Models;
 
-public class CreateProjectResponse
+public class CreateCompliantProjectResponse
 {
     public Guid Id { get; set; }
 }
