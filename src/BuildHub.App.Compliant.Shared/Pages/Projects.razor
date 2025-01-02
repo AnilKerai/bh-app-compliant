@@ -46,6 +46,7 @@ else
     private List<ComplianceProjectViewModel> _projects = null!;
     private string? _searchString;
     private Func<ComplianceProjectViewModel, object> SortBy => x => x.Reference;
+
     private Func<ComplianceProjectViewModel, bool> QuickFilter => x =>
     {
         if (string.IsNullOrWhiteSpace(_searchString))
@@ -66,7 +67,7 @@ else
     {
         Navigation.NavigateTo($"/project/{args.Item.Id}");
     }
-    
+
     private async Task OpenAddProjectDialog()
     {
         var parameters = new DialogParameters();
