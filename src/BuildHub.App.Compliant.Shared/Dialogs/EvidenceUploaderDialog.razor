@@ -5,7 +5,18 @@
         <MudText Typo="Typo.h5" Class="mb-2">Upload Evidence</MudText>
         <MudForm @ref="_form" @bind-IsValid="@_isValid" @bind-Errors="@_errors">
             <MudTextField Label="Document Name" @bind-Value="_evidenceMetadata.DocumentName" Required="true" RequiredError="Document Name is required" For="@(() => _evidenceMetadata.DocumentName)"/>
-            <MudTextField Label="Document Type" @bind-Value="_evidenceMetadata.DocumentType" Required="true" RequiredError="Document Type is required" For="@(() => _evidenceMetadata.DocumentType)"/>
+            @* <MudTextField Label="Document Type" @bind-Value="_evidenceMetadata.DocumentType" Required="true" RequiredError="Document Type is required" For="@(() => _evidenceMetadata.DocumentType)"/> *@
+            <MudSelect @bind-Value="_evidenceMetadata.DocumentType"
+                       Variant="Variant.Outlined"
+                       Label="Document Type"
+                       Required="true"
+                       RequiredError="Document Type is required"
+                       For="@(() => _evidenceMetadata.DocumentType)">
+                @foreach (var state in Enum.GetValues<DocumentType>())
+                {
+                    <MudSelectItem Value="state">@state</MudSelectItem>
+                }
+            </MudSelect>
             <EvidenceUploader FilesUploaded="AddFileToList" />
         </MudForm>
     </DialogContent>
