@@ -1,5 +1,6 @@
 ﻿@page "/project/{id:guid}"
 
+@using BuildHub.App.Compliant.Application.Extensions
 @using BuildHub.App.Compliant.Application.Models
 @using BuildHub.App.Compliant.Application.Services
 @using BuildHub.App.Compliant.Shared.Dialogs
@@ -95,7 +96,7 @@ else
                         </HeaderContent>
                         <RowTemplate>
                             <MudTd>@context.DocumentName</MudTd>
-                            <MudTd>@context.DocumentType</MudTd>
+                            <MudTd>@context.DocumentType.ToString().SplitCamelCase()</MudTd>
                             <MudTd>@context.UploadDate.ToShortDateString()</MudTd>
                             <MudTd>@context.UploadedBy</MudTd>
                             <MudTd>@(context.IsVerified ? "Yes" : "No")</MudTd>
